@@ -17,4 +17,4 @@ services:
 volumes:
   my-db:
 
-# mysql -u user then enter password
+# mysql -u user -p password
