@@ -9,10 +9,19 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
 import java.io.IOException;
 
 public class AuthenticationHandler implements AuthenticationSuccessHandler , AuthenticationFailureHandler {
+
+    private final AuthenticationSuccessHandler successHandler;
+
+    public AuthenticationHandler(String url) {
+        SimpleUrlAuthenticationSuccessHandler successHandler = new SimpleUrlAuthenticationSuccessHandler(url);
+        successHandler.setAlwaysUseDefaultTargetUrl(true);
+        this.successHandler = successHandler;
+    }
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {

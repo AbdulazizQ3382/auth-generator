@@ -1,6 +1,7 @@
 package com.auth.generator.authgenerator.config;
 
 import com.auth.generator.authgenerator.authentication.AuthenticationEntity;
+import com.auth.generator.authgenerator.authentication.AuthenticationHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authorization.AuthorizationDecision;
@@ -21,14 +22,7 @@ import java.util.logging.Logger;
 public class Security {
 
     Logger logger  = Logger.getLogger(Security.class.getName());
-//    @Bean
-//    @Order(1)
-//    public void setSecurityContext(){
-//        SecurityContext context = SecurityContextHolder.createEmptyContext();
-//        Authentication authentication = new TestingAuthenticationToken("qannam","qannam1234","Role_Admin");
-//        context.setAuthentication(authentication);
-//        SecurityContextHolder.setContext(context);
-//    }
+
 
     public Collection<? extends GrantedAuthority> getAuthorities(){
         SecurityContext context = SecurityContextHolder.getContext();
@@ -46,12 +40,17 @@ public class Security {
 
     @Bean
     public SecurityFilterChain globalSecurityFilter(HttpSecurity httpSecurity, AuthorizationManager<RequestAuthorizationContext> authorizationManager) throws Exception{
+        AuthenticationHandler authenticationHandler = new AuthenticationHandler("/login");
         httpSecurity
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/favicon.co").permitAll()
                         .requestMatchers("/login","/register").access(authorizationManager)
                         .anyRequest().permitAll()
-                );
+                )
+                .formLogin((form)-> form
+                        .successHandler(authenticationHandler)
+                        .failureHandler(authenticationHandler));
+
         return httpSecurity.build();
     }
 
